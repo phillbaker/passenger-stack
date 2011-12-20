@@ -1,0 +1,20 @@
+# Passenger stack, zero to hero in under five minutes
+Scripts for [Sprinkle](http://github.com/crafterm/sprinkle/ "Sprinkle"), the provisioning tool
+
+## How to get your sprinkle on:
+
+* Get a brand spanking new slice / host (Ubuntu please)
+* Create yourself a user, ssh in with password as root:
+  $ adduser [user]
+  $ adduser [user] admin
+  $ mkdir /home/[user]/.ssh
+* scp from your local machine: 
+  $ ~/.ssh/id_dsa.pub [user]@[ip]:~/.ssh/authorized_keys
+* Set your slices url / ip address in deploy.rb (config/deploy.rb.example provided)
+* Set username in config/deploy.rb if it isn't the same as your local machine (config/deploy.rb.example provided)
+
+From your local system (from the passenger-stack directory), run:
+
+    sprinkle -c -s config/install.rb
+
+After you've waited for everything to run, you should have a provisioned slice.

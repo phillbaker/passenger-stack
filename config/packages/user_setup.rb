@@ -18,9 +18,11 @@ else
   $users.each do |user, roles|
     package "create_user_#{user}" do
       noop do
-        #pre :install, "groupadd -f #{user}"
-        #pre :install, "useradd -s /bin/bash -m -g #{user} #{user} || true"
-        pre :install, "adduser #{user}"
+        #do not use the adduser command, it prompts for input and will hang
+        # this will create users with no passwords but our sshd config doesn't permit logins with empty passwords so external users can't login
+        pre :install, "groupadd -f #{user}"
+        pre :install, "useradd -s /bin/bash -m -g #{user} #{user} || true"
+        # pre :install, "adduser #{user}"
         roles.each do |role|
           pre :install, "adduser #{user} #{role}"
         end

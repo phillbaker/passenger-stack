@@ -19,11 +19,10 @@ end
 
 package :passenger, :provides => :appserver do
   description 'Phusion Passenger (mod_rails)'
-  version '3.0.8'
-  binaries = %w(passenger-config passenger-install-nginx-module passenger-install-apache2-module passenger-make-enterprisey passenger-memory-stats passenger-spawn-server passenger-status passenger-stress-test)
+  version '3.0.11'
+  binaries = %w(passenger-config passenger-install-apache2-module passenger-make-enterprisey passenger-memory-stats passenger-spawn-server passenger-status passenger-stress-test)
   
   gem 'passenger' do
-    
     binaries.each {|bin| post :install, "ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"}
     
     post :install, 'echo -en "\n\n\n\n" | sudo passenger-install-apache2-module'
@@ -51,7 +50,7 @@ package :passenger, :provides => :appserver do
     has_directory "#{RUBY_PATH}/lib/ruby/gems/1.8/gems/passenger-#{version}"
   end
 
-  requires :apache, :apache2_prefork_dev, :ruby
+  requires :apache, :apache2_prefork_dev, :rubygems
 end
 
 # These "installers" are strictly optional, I believe

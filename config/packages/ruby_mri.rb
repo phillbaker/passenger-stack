@@ -19,3 +19,17 @@ package :ruby_mri_dependencies do
   apt %w(zlib1g-dev libreadline5-dev libssl-dev libxslt-dev libxml2-dev)
   requires :build_essential
 end
+
+package :rubygems do
+  description 'Ruby Gems Package Management System'
+  version '1.8.12'
+  source "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
+    custom_install 'ruby setup.rb'
+  end
+
+  requires :ruby
+
+  verify do
+    ruby_can_load 'rubygems'
+  end
+end

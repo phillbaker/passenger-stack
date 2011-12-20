@@ -1,10 +1,12 @@
-def run_deployment
+def run_deployment(initial = false)
   deployment do
     # mechanism for deployment
     delivery :capistrano do
       begin
+        recipes 'config/initial.rb' if initial
         recipes 'Capfile'
       rescue LoadError
+        recipes 'initial' if initial
         recipes 'deploy'
       end
     end

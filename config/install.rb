@@ -2,12 +2,7 @@ require File.join(File.dirname(__FILE__),'common.rb')
 
 $:<< File.join(File.dirname(__FILE__), 'packages')
 
-#require all files in package
-# Dir["#{File.dirname(__FILE__)}/packages/*.rb"].each do |f|
-#   require f
-# end
-
-# Require the stack base we want
+# Require the stack we want
 %w(gem_bundler database_mysql database_sqlite essential git image_management ruby_mri webserver_apache).each do |lib|
   require lib
 end

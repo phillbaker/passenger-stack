@@ -16,7 +16,7 @@ package :ruby_mri, :provides => :ruby do
 end
 
 package :ruby_mri_dependencies do
-  apt %w(zlib1g-dev libreadline5-dev libssl-dev libxslt-dev libxml2-dev)
+  apt %w(zlib1g-dev libreadline5-dev libssl-dev libxslt-dev libxml2-dev libc6-dev)
   requires :build_essential
 end
 

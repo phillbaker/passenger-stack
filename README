@@ -1,5 +1,5 @@
 # Passenger stack, zero to hero in under five minutes
-Scripts for [Sprinkle](http://github.com/crafterm/sprinkle/ "Sprinkle"), the provisioning tool
+Scripts for [Sprinkle](http://github.com/crafterm/sprinkle/ "Sprinkle"), the provisioning tool. Good introduction tutorial http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/.
 
 ## How to get your sprinkle on:
 

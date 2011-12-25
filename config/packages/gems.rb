@@ -1,3 +1,24 @@
+# package :gems do
+#   
+#   ['install: --no-rdoc --no-ri', 'update: --no-rdoc --no-ri'].each do |line|
+#     pre :install, "echo '#{line}' | tee -a ~/.gemrc"
+#   end
+#   
+#   %w(rubygems-update bundler rack rails rake).each do |gem_name|
+#     description "#{gem_name} (versioned)"
+#     gem gem_name, :version => "~>#{eval("VERSION_#{}")}"
+#     verify do
+#       has_gem gem_name
+#     end
+#   end
+#   
+#   #non-similarly named executables to check for
+#   verify do
+#     has_executable 'bundle'
+#     has_executable 'rackup'
+#   end
+# end
+
 package :gems, :provides => [:bundler, :rack, :rails, :rake] do
   description 'Bundler, Rack, Rails, Rake (versioned)'
   

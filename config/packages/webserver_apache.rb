@@ -1,13 +1,19 @@
 package :apache, :provides => :webserver do
   description 'Apache2 web server.'
+  
   apt 'apache2 apache2.2-common apache2-mpm-prefork apache2-utils libexpat1 ssl-cert libcurl4-openssl-dev' do
     post :install, 'a2enmod rewrite'
   end
-
+  
+  # Apache default sites v host file, for arbitrary sub-domain names
+  vhosts = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
+  transfer(vhosts, '/etc/apache2/sites-available/default', :sudo => true)
+  post :install, 'a2ensite default' #also, a restart, but that should happen with later package installations
+  
   verify do
     has_executable '/usr/sbin/apache2'
   end
-
+  
   requires :build_essential
   optional :apache_etag_support, :apache_deflate_support, :apache_expires_support
 end

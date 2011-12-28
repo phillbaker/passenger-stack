@@ -2,6 +2,22 @@ require File.join(File.dirname(__FILE__),'common.rb')
 
 $:<< File.join(File.dirname(__FILE__), 'packages')
 
+module Sprinkle::Package
+  @@capistrano = {}
+
+  def self.set_variables=(set)
+    @@capistrano = set
+  end
+
+  def self.fetch(name)
+    @@capistrano[name]
+  end
+  
+  def self.exists?(name)
+    @@capistrano.key?(name)
+  end
+end
+
 # Require the stack we want
 %w(database_mysql database_sqlite essential git gems image_management ruby_mri webserver_apache).each do |lib|
   require lib
@@ -12,7 +28,7 @@ end
 # Build up your own and strip down your server until you get it right. 
 policy :passenger_stack, :roles => :target do
   requires :webserver               # Apache
-  requires :appserver               # Passenger #TODO: /Users/phill/Documents/workspace/sprinkle/passenger-stack/.bundle/ruby/1.8/gems/capistrano-2.9.0/lib/capistrano/command.rb:176:in `process!': failed: "sh -c 'sudo -p '\\''sudo password: '\\'' gem install passenger --version '\\''3.0.8'\\'' --no-rdoc --no-ri'" on 173.230.155.35 (Capistrano::CommandError)
+  requires :appserver               # Passenger
   requires :ruby                      # MRI Ruby (or REE)
   requires :image_management        # ImageMagick
   requires :gems                   # common gems

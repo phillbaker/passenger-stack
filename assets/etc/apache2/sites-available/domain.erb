@@ -15,22 +15,22 @@
 
 #
 # Use name-based virtual hosting.
-#  (on by default in ubuntu)
-# NameVirtualHost *:80
+#
+NameVirtualHost <%= domain %>:80
 
 #
 # The first VirtualHost section is used for all requests that do not
 # match a ServerName or ServerAlias in any <VirtualHost> block. Default virtual host.
 #
-<VirtualHost *:80>
-	ServerAdmin webmaster@localhost
+<VirtualHost <%= domain %>:80>
+	ServerAdmin webmaster@<%= domain %>
 
-	DocumentRoot /var/www/localhost
+	DocumentRoot /var/www/<%= domain %>
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory /var/www/localhost/>
+	<Directory /var/www/<%= domain %>/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride None
 		Order allow,deny
@@ -77,17 +77,16 @@
 
 #
 #Wildcard subdomain
-<VirtualHost *:80>
-    ServerName www.localhost
-    ServerAlias *.localhost
+<VirtualHost <%= domain %>:80>
+    ServerName www.<%= domain %>
+    ServerAlias *.<%= domain %>
     
     ErrorLog /var/log/apache2/error.log
-		LogLevel warn
-		CustomLog /var/log/apache2/access.log combined
+    LogLevel warn
+    CustomLog /var/log/apache2/access.log combined
 		
     UseCanonicalName Off
     VirtualDocumentRoot /var/www/%0
 
-		ServerSignature Off 
+    ServerSignature Off 
 </VirtualHost>
-

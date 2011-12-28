@@ -3,12 +3,24 @@ package :apache, :provides => :webserver do
   
   apt 'apache2 apache2.2-common apache2-mpm-prefork apache2-utils libexpat1 ssl-cert libcurl4-openssl-dev' do
     post :install, 'a2enmod rewrite'
+    post :install, 'a2enmod vhost_alias'
   end
   
   # Apache default sites v host file, for arbitrary sub-domain names
-  vhosts = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
-  transfer(vhosts, '/etc/apache2/sites-available/default', :sudo => true)
-  post :install, 'a2ensite default' #also, a restart, but that should happen with later package installations
+  vhosts_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
+  transfer vhosts_default, '/etc/apache2/sites-available/default', :sudo => true do
+    post :install, 'a2ensite default' 
+    #also, a restart, but that should happen with later package installations
+  end
+  
+  domain = Sprinkle::Package.fetch(:domain)
+  if Sprinkle::Package.exists?(:domain)
+    vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'domain.erb'))
+    domain = Sprinkle::Package.fetch(:domain)
+    transfer vhosts_domain, "/etc/apache2/sites-available/#{domain}", :sudo => true, :render => true, :locals => { :domain => domain } do
+      post :install, "a2ensite #{domain}"
+    end
+  end
   
   verify do
     has_executable '/usr/sbin/apache2'

@@ -5,7 +5,9 @@
 
 # who we want to add the our public key as an authorized user for
 # admin = all priveleges, sudo = run without password (ie good for sprinkle/server maintenance)
-$users = {'branch' => [:admin, :sudo], `whoami`.strip => [:admin]}
+# branch = seen more than root (get it?)
+# git = for deployment purposes
+$users = {'branch' => [:admin, :sudo], 'git' => [:admin, :sudo], `whoami`.strip => [:admin]}
 
 require File.join(File.dirname(__FILE__),'common.rb')
 require File.join(File.dirname(__FILE__), 'packages', 'user_setup.rb')

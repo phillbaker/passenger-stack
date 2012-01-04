@@ -4,26 +4,37 @@ package :apache, :provides => :webserver do
   apt 'apache2 apache2.2-common apache2-mpm-prefork apache2-utils libexpat1 ssl-cert libcurl4-openssl-dev' do
     post :install, 'a2enmod rewrite'
     post :install, 'a2enmod vhost_alias'
+    post :install, 'rm /var/www/index.html' #remove default start page
   end
   
   # Apache default sites v host file, for arbitrary sub-domain names
   vhosts_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
-  transfer vhosts_default, '/etc/apache2/sites-available/default', :sudo => true do
+  transfer vhosts_default, '/tmp/default' do
+    post :install, 'mv /tmp/default /etc/apache2/sites-available/'
     post :install, 'a2ensite default' 
     #also, a restart, but later package installations do that (at least as of now...)
   end
   # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
   index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'public', 'index.html'))
-  transfer index_default, '/var/www/localhost/index.html', :sudo => true
+  transfer index_default, '/tmp/index.html' do
+    post :install, 'mkdir -p /var/www/localhost'
+    post :install, 'mv /tmp/index.html /var/www/localhost/'
+  end
   
   if Package.exists?(:domain)
     domain = Package.fetch(:domain)
+    
     vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'domain.erb'))
-    transfer vhosts_domain, "/etc/apache2/sites-available/#{domain}", :sudo => true, :render => true, :locals => { :domain => domain } do
+    transfer vhosts_domain, "/tmp/#{domain}", :render => true, :locals => { :domain => domain } do
+      post :install, "mv /tmp/#{domain} /etc/apache2/sites-available/"
       post :install, "a2ensite #{domain}"
     end
+    
     index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'domain', 'public', 'index.html.erb'))
-    transfer index_domain, "/var/www/#{domain}/public/index.html", :sudo => true, :render => true, :locals => { :domain => domain }
+    transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
+      post :install, "mkdir -p /var/www/#{domain}/public/"
+      post :install, "mv /tmp/index.html /var/www/#{domain}/public/"
+    end
   end
   
   verify do

@@ -5,7 +5,7 @@ package :build_essential do
     pre :install, 'apt-get update'
   end
   
-  requires :apt_essential
+  optional :apt_essential
 end
 
 package :apt_utils do
@@ -22,20 +22,25 @@ end
 package :apt_essential do
   #Other potential tools:
   #curl vim libc6-dev zlib1g-dev php5-cli python gettext python-setuptools proftpd
-  apt %w(sudo vim screen gcc make ssh wget) do
-    banner = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'banner'))
-    transfer banner, '/etc/banner', :sudo => true
-    
-    ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'ssh', 'sshd_config'))
-    transfer ssh, '/etc/ssh/sshd_config', :sudo => true do
-      post :install, 'service ssh restart', :sudo => true #restart ssh
-    end
-    
-    ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'iptables.up.rules'))
-    transfer ssh, '/etc/iptables.up.rules', :sudo => true do
-      post :install, 'iptables-restore < /etc/iptables.up.rules', :sudo => true
-      post :install, 'iptables -L', :sudo => true
-    end
+  apt %w(sudo ssh vim iptables screen gcc make wget) 
+  
+  banner = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'banner'))
+  #the ':sudo => true option is bogus on transfer, and in general scp doesn't do that: http://superuser.com/questions/138893/scp-to-remote-server-with-sudo/367192#367192
+  transfer banner, '/tmp/banner' do
+    post :install, 'mv /tmp/banner /etc/'
+  end
+  
+  ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'ssh', 'sshd_config'))
+  transfer ssh, '/tmp/sshd_config' do
+    post :install, 'mv /tmp/sshd_config /etc/ssh/'
+    post :install, 'service ssh restart' #restart ssh
+  end
+  
+  iptables = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'iptables.up.rules'))
+  transfer iptables, '/tmp/iptables.up.rules' do
+    post :install, 'mv /tmp/iptables.up.rules /etc/'
+    post :install, 'iptables-restore < /etc/iptables.up.rules'
+    post :install, 'iptables -L'
   end
   
   #http://library.linode.com/getting-started#sph_set-the-hostname
@@ -48,6 +53,7 @@ package :apt_essential do
     has_file '/etc/ssh/sshd_config'
     has_file '/etc/iptables.up.rules'
   end
+  
 end
 
 package :system_update do

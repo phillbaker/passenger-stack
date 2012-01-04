@@ -60,12 +60,13 @@ end
 
 package :god_service do
   
-  transfer "#{File.dirname(__FILE__)}/../config/god", '/etc/init.d/god', :sudo => true do
-    post :install, 'sudo chmod +x /etc/init.d/god'
-    post :install, 'sudo update-rc.d god defaults'
+  transfer "#{File.dirname(__FILE__)}/../config/god", '/tmp/god' do
+    post :install, 'mv /tmp/god /etc/init.d/'
+    post :install, 'chmod +x /etc/init.d/god'
+    post :install, 'update-rc.d god defaults'
     
-    post :install, 'sudo mkdir /etc/god'
-    post :install, 'sudo touch /var/log/god.log'
+    post :install, 'mkdir /etc/god'
+    post :install, 'touch /var/log/god.log'
   end
 
   verify do

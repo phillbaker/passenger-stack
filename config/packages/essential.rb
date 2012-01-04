@@ -40,7 +40,7 @@ package :apt_essential do
   
   #http://library.linode.com/getting-started#sph_set-the-hostname
   noop do
-    #TODO
+    #TODO but linode has an adequate default...
   end
   
   verify do

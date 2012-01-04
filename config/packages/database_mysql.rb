@@ -3,6 +3,7 @@ package :mysql, :provides => :database do
   apt %w( mysql-server mysql-client libmysqlclient15-dev )
   
   verify do
+    has_executable 'mysqld'
     has_executable 'mysql'
   end
   

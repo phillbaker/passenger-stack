@@ -25,12 +25,12 @@
 <VirtualHost *:80>
 	ServerAdmin webmaster@localhost
 
-	DocumentRoot /var/www/localhost
+	DocumentRoot /var/www/localhost/public
 	<Directory />
 		Options FollowSymLinks
 		AllowOverride None
 	</Directory>
-	<Directory /var/www/localhost/>
+	<Directory /var/www/localhost/public/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride None
 		Order allow,deny
@@ -76,7 +76,7 @@
 # </VirtualHost>
 
 #
-#Wildcard subdomain
+# Wildcard subdomain
 <VirtualHost *:80>
     ServerName www.localhost
     ServerAlias *.localhost
@@ -86,7 +86,7 @@
 		CustomLog /var/log/apache2/access.log combined
 		
     UseCanonicalName Off
-    VirtualDocumentRoot /var/www/%0
+    VirtualDocumentRoot /var/www/%0/public
 
 		ServerSignature Off 
 </VirtualHost>

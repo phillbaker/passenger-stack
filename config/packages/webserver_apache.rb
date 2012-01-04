@@ -10,20 +10,31 @@ package :apache, :provides => :webserver do
   vhosts_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
   transfer vhosts_default, '/etc/apache2/sites-available/default', :sudo => true do
     post :install, 'a2ensite default' 
-    #also, a restart, but that should happen with later package installations
+    #also, a restart, but later package installations do that (at least as of now...)
   end
+  # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
+  index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'public', 'index.html'))
+  transfer index_default, '/var/www/localhost/index.html', :sudo => true
   
-  domain = Sprinkle::Package.fetch(:domain)
-  if Sprinkle::Package.exists?(:domain)
+  if Package.exists?(:domain)
+    domain = Package.fetch(:domain)
     vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'domain.erb'))
-    domain = Sprinkle::Package.fetch(:domain)
     transfer vhosts_domain, "/etc/apache2/sites-available/#{domain}", :sudo => true, :render => true, :locals => { :domain => domain } do
       post :install, "a2ensite #{domain}"
     end
+    index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'domain', 'public', 'index.html.erb'))
+    transfer index_domain, "/var/www/#{domain}/public/index.html", :sudo => true, :render => true, :locals => { :domain => domain }
   end
   
   verify do
     has_executable '/usr/sbin/apache2'
+    file_contains vhosts_default, "Wildcard subdomain"
+    has_file '/var/www/localhost/index.html'
+    if Package.exists?(:domain)
+      domain = Package.fetch(:domain)
+      has_file "/etc/apache2/sites-available/#{domain}"
+      has_file "/var/www/#{domain}/public/index.html"
+    end
   end
   
   requires :build_essential

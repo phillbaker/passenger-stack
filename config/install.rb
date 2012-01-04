@@ -2,24 +2,27 @@ require File.join(File.dirname(__FILE__),'common.rb')
 
 $:<< File.join(File.dirname(__FILE__), 'packages')
 
+#Monkey patch...
 module Sprinkle::Package
-  @@capistrano = {}
+  class Package
+    @@capistrano = {}
 
-  def self.set_variables=(set)
-    @@capistrano = set
-  end
+    def self.set_variables=(set)
+      @@capistrano = set
+    end
 
-  def self.fetch(name)
-    @@capistrano[name]
-  end
+    def self.fetch(name)
+      @@capistrano[name]
+    end
   
-  def self.exists?(name)
-    @@capistrano.key?(name)
+    def self.exists?(name)
+      @@capistrano.key?(name)
+    end
   end
 end
 
-# Require the stack we want
-%w(database_mysql database_sqlite essential git gems image_management ruby_mri webserver_apache).each do |lib|
+# Require the stack we want. (There is a dependency with RUBY_PATH defined in the ruby package - require it first.)
+%w(ruby_mri database_mysql database_sqlite essential git gems image_management webserver_apache).each do |lib|
   require lib
 end
 
@@ -29,12 +32,13 @@ end
 policy :passenger_stack, :roles => :target do
   requires :webserver               # Apache
   requires :appserver               # Passenger
-  requires :ruby                      # MRI Ruby (or REE)
+  requires :ruby                    # MRI Ruby (or REE)
   requires :image_management        # ImageMagick
-  requires :gems                   # common gems
-  requires :mysql                # MySQL and SQLite (or MongoDB or Postgres)
-  #requires :sqlite
+  requires :gems                    # common gems
+  requires :mysql                   # MySQL and SQLite (or MongoDB or Postgres)
+  requires :sqlite
   requires :scm                     # Git
+  requires :mailserver              # Postfix
   # requires :memcached               # Memcached
   # requires :libmemcached            # Libmemcached
 end

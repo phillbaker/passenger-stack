@@ -1,0 +1,108 @@
+# !/bin/sh
+
+### BEGIN INIT INFO
+# Provides: god
+# Required-Start: $all
+# Required-Stop: $all
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: God
+### END INIT INFO
+
+# How to use: symbolically link your applications' god files (/path/to/app/config/app.god) to /etc/god/app.god
+
+
+
+# Based on: http://stevelorek.com/resque-worker-management-with-god.html
+#  http://openmonkey.com/2008/05/27/god-init-script-for-debian-ubuntu-systems/
+#  https://github.com/crazycode/sprinkle-recipes/blob/master/recipes/config/god
+#  https://github.com/mojombo/god/blob/master/init/god
+
+NAME=god
+DESC=god
+DAEMON="/usr/local/bin/god"
+PIDFILE=/var/run/god.pid
+LOGFILE=/var/log/god.log
+CONFIGFILEDIR=/etc/god
+
+#DEBUG_OPTIONS="--log-level debug"
+DEBUG_OPTIONS=""
+
+set -e
+
+# Make sure the binary and the config file are present before proceeding
+test -x $DAEMON || echo "No executable." && exit 0
+
+# Create this file and put in a variable called GOD_CONFIG, pointing to
+# your God configuration file
+# E.g. 
+#   #Config for GOD - I point it to a file in my RAILS_ROOT
+#   GOD_CONFIG=/path/to/rails/config/delayed_job.god
+#test -f /etc/default/god && . /etc/default/god
+#[ $GOD_CONFIG ] || exit 0
+
+# Go no further if config directory is missing.
+[ -d "$CONFIGFILEDIR" ] || echo "No config directory." && exit 0
+
+. /lib/lsb/init-functions
+
+RETVAL=0
+
+god_start() {
+  echo -n "Starting $DESC: "
+  start_cmd="$DAEMON -l $LOGFILE -P $PIDFILE $DEBUG_OPTIONS"
+  #stop_cmd="kill -QUIT `cat $PIDFILE`"
+  #echo $start_cmd
+  $start_cmd || echo -en "god already running"
+  RETVAL=$?
+  echo "$NAME."
+  if [ "$RETVAL" = "0" ]; then
+    sleep 2 # wait for server to load before loading config files
+    if [ -d $CONFIGFILEDIR ]; then
+      for file in `ls -1 $CONFIGFILEDIR/*.god`; do
+        echo "god: loading $file ..."
+        $DAEMON load $file
+      done
+    fi
+  fi
+  return $RETVAL
+}
+
+god_stop() {
+  echo -n "Stopping $DESC: "
+  stop_cmd="$DAEMON terminate"
+  echo $stop_cmd
+  $stop_cmd || echo -en "god not running"
+  RETVAL=$?
+  echo "$NAME."
+  return $RETVAL
+}
+
+case "$1" in
+  start)
+    god_start
+    RETVAL=$?
+  ;;
+  stop)
+    #kill `cat /var/run/god.pid`
+    god_stop
+    RETVAL=$?
+  ;;
+  restart)
+    echo -n "Restarting $DESC: "
+    god_stop
+    god_start
+    RETVAL=$?
+    echo "$NAME."
+  ;;
+  status)
+    $DAEMON status
+    RETVAL=$?
+  ;;
+  *)
+    echo "Usage: god {start|stop|restart|status}"
+    exit 1
+  ;;
+esac
+
+exit $RETVAL

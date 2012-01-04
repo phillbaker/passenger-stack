@@ -1,20 +1,36 @@
-# Passenger stack, zero to hero in under five minutes
-Scripts for [Sprinkle](http://github.com/crafterm/sprinkle/ "Sprinkle"), the provisioning tool. Good introduction tutorial http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/.
+# Passenger stack, zero to hero in under five minutes!
+Scripts for Sprinkle [1], the provisioning tool. Good introduction tutorial at [2]. Other packages at [3].
 
 ## How to get your sprinkle on:
 
-* Get a brand spanking new slice / host (Ubuntu please)
-* Create yourself a user, ssh in with password as root:
-  $ adduser [user]
-  $ adduser [user] admin
-  $ mkdir /home/[user]/.ssh
-* scp from your local machine: 
-  $ ~/.ssh/id_dsa.pub [user]@[ip]:~/.ssh/authorized_keys
-* Set your slices url / ip address in deploy.rb (config/deploy.rb.example provided)
-* Set username in config/deploy.rb if it isn't the same as your local machine (config/deploy.rb.example provided)
+1. Get a brand spanking new slice/host (Ubuntu please).
+2. Set your slices url/IP address in deploy.rb (config/deploy.rb.example provided)
+3. Set username in config/deploy.rb if it isn't the same as your local machine (config/deploy.rb.example provided)
 
 From your local system (from the passenger-stack directory), run:
 
-    sprinkle -c -s config/install.rb
+	sprinkle -c -s config/users.rb [to create users, copy ssh keys, set permissions]
+  sprinkle -c -s config/install.rb
 
-After you've waited for everything to run, you should have a provisioned slice.
+After you've waited for everything to run, you should have a provisioned slice. 
+
+Later, to update the system, feel free to:
+  sprinkle -c -s config/update.rb
+
+# What this does not do:
+* Set the password for mysql root:
+ $ mysqladmin --user=root password ROOT_PASSWORD
+* Set the passwords for any of the created user accounts (uses ssh key pair authentication). For prompts:
+ $ passwd [user]
+
+
+# How this sprinkle cloud is different from others
+
+This one's mine! And:
+* Creates users and ssh stuff automagically.
+* Secures some ssh/apache stuff.
+* Makes it easy to host multiple projects/apps/etc. from subdomains: by setting a domain name variable in deply
+
+[1] http://github.com/crafterm/sprinkle/
+[2] http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/
+[3] https://github.com/grimen/sprinkle-stack/blob/master/packages/

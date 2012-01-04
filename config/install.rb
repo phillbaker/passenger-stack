@@ -22,7 +22,7 @@ module Sprinkle::Package
 end
 
 # Require the stack we want. (There is a dependency with RUBY_PATH defined in the ruby package - require it first.)
-%w(ruby_mri database_mysql database_sqlite essential git gems image_management webserver_apache).each do |lib|
+%w(ruby_mri database_mysql database_sqlite essential git gems image_management mailserver_postfix php webserver_apache).each do |lib|
   require lib
 end
 
@@ -33,6 +33,7 @@ policy :passenger_stack, :roles => :target do
   requires :webserver               # Apache
   requires :appserver               # Passenger
   requires :ruby                    # MRI Ruby (or REE)
+  requires :php                     # Apache module + executable
   requires :image_management        # ImageMagick
   requires :gems                    # common gems
   requires :mysql                   # MySQL and SQLite (or MongoDB or Postgres)

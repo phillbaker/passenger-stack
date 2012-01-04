@@ -22,7 +22,7 @@ Later, to update the system, feel free to:
  $ mysqladmin --user=root password ROOT_PASSWORD
 * Set the passwords for any of the created user accounts (uses ssh key pair authentication). For prompts:
  $ passwd [user]
-
+* Set up wordpress (see [4]). Create a mysql database, user, password. Go to wordpress.subdomain.example.com/wp-admin/install.php.
 
 # How this sprinkle cloud is different from others
 
@@ -34,3 +34,4 @@ This one's mine! And:
 [1] http://github.com/crafterm/sprinkle/
 [2] http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/
 [3] https://github.com/grimen/sprinkle-stack/blob/master/packages/
+[4] http://codex.wordpress.org/Installing_WordPress

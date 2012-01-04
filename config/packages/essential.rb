@@ -21,8 +21,8 @@ end
 
 package :apt_essential do
   #Other potential tools:
-  #vim screen gcc make libc6-dev zlib1g-dev php5 php5-cli php5-mysql python gettext python-setuptools proftpd
-  apt %w(sudo vim screen gcc make ssh) do
+  #curl vim libc6-dev zlib1g-dev php5-cli python gettext python-setuptools proftpd
+  apt %w(sudo vim screen gcc make ssh wget) do
     banner = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'banner'))
     transfer banner, '/etc/banner', :sudo => true
     
@@ -40,7 +40,7 @@ package :apt_essential do
   
   #http://library.linode.com/getting-started#sph_set-the-hostname
   noop do
-    
+    #TODO
   end
   
   verify do

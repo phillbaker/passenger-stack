@@ -18,7 +18,7 @@ package :apache, :provides => :webserver do
   # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
   index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'public', 'index.html'))
   transfer index_default, '/tmp/index.html' do
-    post :install, 'mkdir -p /var/www/localhost'
+    post :install, 'mkdir -p /var/www/localhost/public'
     post :install, 'mv /tmp/index.html /var/www/localhost/public/'
     post :install, 'chmod 644 /var/www/localhost/public/index.html'
   end
@@ -43,7 +43,7 @@ package :apache, :provides => :webserver do
   verify do
     has_executable 'apache2'
     file_contains '/etc/apache2/sites-available/default', "# Wildcard subdomain"
-    has_file '/var/www/localhost/index.html'
+    has_file '/var/www/localhost/public/index.html'
     if domain
       has_file "/etc/apache2/sites-available/#{domain}"
       has_file "/var/www/#{domain}/public/index.html"

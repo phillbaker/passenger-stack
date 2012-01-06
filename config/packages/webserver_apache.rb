@@ -4,7 +4,8 @@ package :apache, :provides => :webserver do
   apt 'apache2 apache2.2-common apache2-mpm-prefork apache2-utils libexpat1 ssl-cert libcurl4-openssl-dev' do
     post :install, 'a2enmod rewrite'
     post :install, 'a2enmod vhost_alias'
-    post :install, 'rm /var/www/index.html' #remove default start page
+    post :install, 'touch /var/www/index.html'#'if [ -e /var/www/index.html ]; then rm /var/www/index.html; fi' #remove default start page
+    post :install, 'rm /var/www/index.html'
   end
   
   # Apache default sites v host file, for arbitrary sub-domain names
@@ -18,12 +19,13 @@ package :apache, :provides => :webserver do
   index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'public', 'index.html'))
   transfer index_default, '/tmp/index.html' do
     post :install, 'mkdir -p /var/www/localhost'
-    post :install, 'mv /tmp/index.html /var/www/localhost/'
+    post :install, 'mv /tmp/index.html /var/www/localhost/public/'
+    post :install, 'chmod 644 /var/www/localhost/public/index.html'
   end
   
-  if Package.exists?(:domain)
-    domain = Package.fetch(:domain)
-    
+  #so these types of checks won't work because stuff is pre-recorded (before variables in deploy are set) and then executed after deploy is done...
+  domain = Package.fetch(:domain)
+  if domain
     vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'domain.erb'))
     transfer vhosts_domain, "/tmp/#{domain}", :render => true, :locals => { :domain => domain } do
       post :install, "mv /tmp/#{domain} /etc/apache2/sites-available/"
@@ -34,15 +36,15 @@ package :apache, :provides => :webserver do
     transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
       post :install, "mkdir -p /var/www/#{domain}/public/"
       post :install, "mv /tmp/index.html /var/www/#{domain}/public/"
+      post :install, "chmod 644 /var/www/#{domain}/public/index.html"
     end
   end
   
   verify do
-    has_executable '/usr/sbin/apache2'
-    file_contains vhosts_default, "Wildcard subdomain"
+    has_executable 'apache2'
+    file_contains '/etc/apache2/sites-available/default', "# Wildcard subdomain"
     has_file '/var/www/localhost/index.html'
-    if Package.exists?(:domain)
-      domain = Package.fetch(:domain)
+    if domain
       has_file "/etc/apache2/sites-available/#{domain}"
       has_file "/var/www/#{domain}/public/index.html"
     end

@@ -5,7 +5,7 @@ package :ruby_mri, :provides => :ruby do
   binaries = %w(erb gem irb rdoc ri ruby testrb)
   source "http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}.tar.gz" do
     prefix RUBY_PATH
-    binaries.each {|bin| post :install, "sudo ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}" }
+    binaries.each {|bin| post :install, "ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}" }
   end
   
   verify do

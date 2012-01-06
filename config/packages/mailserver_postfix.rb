@@ -7,7 +7,7 @@ package :postfix, :provides => :mailserver do
   transfer preseed_template, preseed_file, :render => true
   
   apt 'postfix' do
-    pre :install, "debconf-set-selections #{preseed_file}", :sudo => true
+    pre :install, "debconf-set-selections #{preseed_file}"
   end
 
   verify do

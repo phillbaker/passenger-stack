@@ -21,6 +21,8 @@ module Sprinkle::Package
   end
 end
 
+run_deployment
+
 # Require the stack we want. (There is a dependency with RUBY_PATH defined in the ruby package - require it first.)
 %w(ruby_mri database_mysql database_sqlite essential git gems image_management mailserver_postfix php webserver_apache wordpress).each do |lib|
   require lib
@@ -42,7 +44,6 @@ policy :passenger_stack, :roles => :target do
   
   requires :php                     # Apache module + executable
   requires :wordpress               
-  
   # requires :memcached                
   # requires :libmemcached            
 end
@@ -54,5 +55,3 @@ rescue Gem::LoadError
   puts "sprinkle 0.3.3 required.\n Run: `sudo gem install sprinkle`"
   exit
 end
-
-run_deployment

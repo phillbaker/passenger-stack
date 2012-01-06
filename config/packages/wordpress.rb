@@ -4,7 +4,16 @@ package :wordpress do
   
   binary 'http://wordpress.org/latest.tar.gz' do
     #directory we extract to, if it's not set and we invoke this package, store it in /tmp
-    prefix "/var/www/#{Package.fetch(:wordpress)}" || '/tmp'
+    wp = Package.fetch(:wordpress)
+    post :install, "mv /var/www/#{wp}" if wp
+    
+    prefix '/tmp'
+    archives '/usr/local/sources'
+    builds   '/usr/local/build'
+  end
+  
+  verify do
+    has_directory "/var/www/#{wp}"
   end
   
   #allow multiple copies? ['labs.example.com', 'blog.example.com']

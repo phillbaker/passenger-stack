@@ -5,3 +5,4 @@ source :rubygems
 gem 'capistrano'
 gem 'sprinkle'
 gem 'i18n'
+gem 'erubis'

@@ -32,6 +32,7 @@ package :apt_essential do
   
   ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'ssh', 'sshd_config'))
   transfer ssh, '/tmp/sshd_config' do
+    pre :install, 'mv /etc/ssh/sshd_config /etc/ssh/sshd_config.bak'
     post :install, 'mv /tmp/sshd_config /etc/ssh/'
     post :install, 'service ssh restart' #restart ssh
   end

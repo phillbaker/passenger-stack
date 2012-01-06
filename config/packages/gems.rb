@@ -28,12 +28,12 @@ package :gems, :provides => [:bundler] do
   end
   
   binaries = %w(bundle god)
-  binaries.each do |bin| 
-    post :install, "sudo ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"
-  end
-  
   gem 'rubygems-update'
-  gem 'bundler'
+  gem 'bundler' do
+    binaries.each do |bin| 
+      post :install, "ln -s #{RUBY_PATH}/bin/#{bin} /usr/local/bin/#{bin}"
+    end
+  end
   #gem 'rack', :version => '~>1.3.5'
   #gem 'rails', :version => '~>3.2.0'
   #gem 'rake', :version => '~>0.9.2.2'

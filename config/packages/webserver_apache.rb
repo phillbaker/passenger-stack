@@ -16,11 +16,11 @@ package :apache, :provides => :webserver do
     #also, a restart, but later package installations do that (at least as of now...)
   end
   # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
-  index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'public', 'index.html'))
+  index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'current', 'public', 'index.html'))
   transfer index_default, '/tmp/index.html' do
-    post :install, 'mkdir -p /var/www/localhost/public'
-    post :install, 'mv /tmp/index.html /var/www/localhost/public/'
-    post :install, 'chmod 644 /var/www/localhost/public/index.html'
+    post :install, 'mkdir -p /var/www/localhost/current/public'
+    post :install, 'mv /tmp/index.html /var/www/localhost/current/public/'
+    post :install, 'chmod 644 /var/www/localhost/current/public/index.html'
   end
   
   #so these types of checks won't work because stuff is pre-recorded (before variables in deploy are set) and then executed after deploy is done...
@@ -32,21 +32,21 @@ package :apache, :provides => :webserver do
       post :install, "a2ensite #{domain}"
     end
     
-    index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'domain', 'public', 'index.html.erb'))
+    index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'domain', 'current', 'public', 'index.html.erb'))
     transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
-      post :install, "mkdir -p /var/www/#{domain}/public/"
-      post :install, "mv /tmp/index.html /var/www/#{domain}/public/"
-      post :install, "chmod 644 /var/www/#{domain}/public/index.html"
+      post :install, "mkdir -p /var/www/#{domain}/curent/public/"
+      post :install, "mv /tmp/index.html /var/www/#{domain}/current/public/"
+      post :install, "chmod 644 /var/www/#{domain}/current/public/index.html"
     end
   end
   
   verify do
     has_executable 'apache2'
     file_contains '/etc/apache2/sites-available/default', "# Wildcard subdomain"
-    has_file '/var/www/localhost/public/index.html'
+    has_file '/var/www/localhost/current/public/index.html'
     if domain
       has_file "/etc/apache2/sites-available/#{domain}"
-      has_file "/var/www/#{domain}/public/index.html"
+      has_file "/var/www/#{domain}/current/public/index.html"
     end
   end
   

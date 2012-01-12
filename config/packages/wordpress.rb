@@ -4,8 +4,8 @@ package :wordpress do
   wp = Package.fetch(:wordpress)
   binary 'http://wordpress.org/latest.tar.gz' do
     #directory we extract to, if it's not set and we invoke this package, store it in /tmp
-    post :install, "mkdir -p /var/www/#{wp}" if wp
-    post :install, "mv /tmp/wordpress /var/www/#{wp}/public" if wp
+    post :install, "mkdir -p /var/www/#{wp}/current" if wp
+    post :install, "mv /tmp/wordpress /var/www/#{wp}/current/public" if wp
     
     prefix '/tmp'
     archives '/usr/local/sources'
@@ -13,7 +13,7 @@ package :wordpress do
   end
   
   verify do
-    has_directory "/var/www/#{wp}/public"
+    has_directory "/var/www/#{wp}/current/public"
   end
   
   #allow multiple copies? ['labs.example.com', 'blog.example.com']

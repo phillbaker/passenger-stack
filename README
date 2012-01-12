@@ -1,5 +1,5 @@
 # Passenger stack, zero to hero in under five minutes!
-Scripts for Sprinkle [1], the provisioning tool. Good introduction tutorial at [2]. Other packages at [3].
+Script for ready-made single-server setup for all-purpose webapp development via Sprinkle [1], the provisioning tool. Good introduction tutorial at [2]. Other packages readily available on github, for example [3].
 
 ## How to get your sprinkle on:
 

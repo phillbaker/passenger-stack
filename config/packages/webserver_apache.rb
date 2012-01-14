@@ -9,14 +9,14 @@ package :apache, :provides => :webserver do
   end
   
   # Apache default sites v host file, for arbitrary sub-domain names
-  vhosts_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'default'))
+  vhosts_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'default'))
   transfer vhosts_default, '/tmp/default' do
     post :install, 'mv /tmp/default /etc/apache2/sites-available/'
     post :install, 'a2ensite default' 
     #also, a restart, but later package installations do that (at least as of now...)
   end
   # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
-  index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'localhost', 'current', 'public', 'index.html'))
+  index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html'))
   transfer index_default, '/tmp/index.html' do
     post :install, 'mkdir -p /var/www/localhost/current/public'
     post :install, 'mv /tmp/index.html /var/www/localhost/current/public/'
@@ -26,13 +26,13 @@ package :apache, :provides => :webserver do
   #so these types of checks won't work because stuff is pre-recorded (before variables in deploy are set) and then executed after deploy is done...
   domain = Package.fetch(:domain)
   if domain
-    vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'apache2', 'sites-available', 'domain.erb'))
+    vhosts_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'domain.erb'))
     transfer vhosts_domain, "/tmp/#{domain}", :render => true, :locals => { :domain => domain } do
       post :install, "mv /tmp/#{domain} /etc/apache2/sites-available/"
       post :install, "a2ensite #{domain}"
     end
     
-    index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'var', 'www', 'domain', 'current', 'public', 'index.html.erb'))
+    index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html.erb'))
     transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
       post :install, "mkdir -p /var/www/#{domain}/curent/public/"
       post :install, "mv /tmp/index.html /var/www/#{domain}/current/public/"

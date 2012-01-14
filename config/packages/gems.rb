@@ -60,7 +60,8 @@ end
 
 package :god_service do
   
-  transfer "#{File.dirname(__FILE__)}/../config/god", '/tmp/god' do
+  god = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'god', 'god'))
+  transfer god, '/tmp/god' do
     post :install, 'mv /tmp/god /etc/init.d/'
     post :install, 'chmod +x /etc/init.d/god'
     post :install, 'update-rc.d god defaults'
@@ -71,6 +72,8 @@ package :god_service do
 
   verify do
     has_file '/etc/init.d/god'
+    has_directory '/etc/god'
+    has_file '/var/log/god.log'
   end
   
   requires :god

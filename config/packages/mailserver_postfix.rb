@@ -2,7 +2,7 @@ package :postfix, :provides => :mailserver do
   description "Postfix - mail server"
 
   preseed_file = '/tmp/postfix.preseed'
-  preseed_template = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'tmp', 'postfix.preseed.erb'))
+  preseed_template = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'postfix', 'postfix.preseed.erb'))
   
   transfer preseed_template, preseed_file, :render => true
   

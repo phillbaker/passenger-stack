@@ -24,20 +24,20 @@ package :apt_essential do
   #curl vim libc6-dev zlib1g-dev php5-cli python gettext python-setuptools proftpd
   apt %w(sudo ssh vim iptables screen gcc make wget) 
   
-  banner = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'banner'))
+  banner = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'ssh', 'banner'))
   #the ':sudo => true option is bogus on transfer, and in general scp doesn't do that: http://superuser.com/questions/138893/scp-to-remote-server-with-sudo/367192#367192
   transfer banner, '/tmp/banner' do
     post :install, 'mv /tmp/banner /etc/'
   end
   
-  ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'ssh', 'sshd_config'))
+  ssh = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'ssh', 'sshd_config'))
   transfer ssh, '/tmp/sshd_config' do
     pre :install, 'mv /etc/ssh/sshd_config /etc/ssh/sshd_config.bak'
     post :install, 'mv /tmp/sshd_config /etc/ssh/'
     post :install, 'service ssh restart' #restart ssh
   end
   
-  iptables = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'etc', 'iptables.up.rules'))
+  iptables = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'iptables', 'iptables.up.rules'))
   transfer iptables, '/tmp/iptables.up.rules' do
     post :install, 'mv /tmp/iptables.up.rules /etc/'
     post :install, 'iptables-restore < /etc/iptables.up.rules'

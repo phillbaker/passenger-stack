@@ -1,13 +1,16 @@
-#run when passing this off to a new maintainer or starting a new box
-# when first run, this will need root password
-# this creates the default account and adds the current users' ssh key to admin
-# this should prompt for root password once and then all other commands should be password free
+# Run when passing this off to a new maintainer or starting a new box.
+#  When first run, this will need root password.
+#  This creates the default account and adds the current users' ssh key to admin
+#  This should prompt for root password once and then all other commands should be password free
 
-# who we want to add the our public key as an authorized user for
-# admin = all priveleges, sudo = run without password (ie good for sprinkle/server maintenance)
-# branch = seen more than root (get it?)
-# git = for capistrano deployment purposes/hosting git projects
-$users = {'branch' => [:admin, :sudo], 'git' => [], `whoami`.strip => [:admin]}
+# Who we want to add the our public key as an authorized user for.
+#  admin = all priveleges, sudo = run without password (ie good for sprinkle/server maintenance)
+#  branch = seen more than root (get it?)
+#  git = for capistrano deployment purposes/hosting git projects
+#  www-pub = group that can edit /var/www stuff
+# TODO use set :users, {...} and then fetch(:users) in the package file instead of the global variables, better form.
+$users = {'branch' => [:admin, :sudo, :'www-pub'], 'git' => [], `whoami`.strip => [:admin, :'www-pub']} 
+
 
 require File.join(File.dirname(__FILE__),'common.rb')
 require File.join(File.dirname(__FILE__), 'packages', 'user_setup.rb')

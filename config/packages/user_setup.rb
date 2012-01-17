@@ -18,11 +18,13 @@ else
   $users.each do |user, roles|
     package "create_user_#{user}" do
       noop do
-        #do not use the adduser command, it prompts for input and will hang
-        # this will create users with no passwords but our sshd config doesn't permit logins with empty passwords so external users can't login
+        # Do not use the adduser command, it prompts for input and will hang
+        # This will create users with no passwords, but...
+        # ...our sshd config ignores empty passwords so external users can't login
+        # ...and users can just ssh in and change their passwords with passwd
+        # Alternative is to read passwords from a config.yml or something
         pre :install, "groupadd -f #{user}"
         pre :install, "useradd -s /bin/bash -m -g #{user} #{user} || true"
-        # pre :install, "adduser #{user}"
         roles.each do |role|
           pre :install, "adduser #{user} #{role}"
         end
@@ -30,6 +32,8 @@ else
       verify do
         has_file "/home/#{user}/.bashrc"
       end
+      requires :create_web_group
+      requires :change_umask
     end
     
     package "create_ssh_dirs_#{user}" do
@@ -85,7 +89,8 @@ else
     package "update_sudoers_#{user}" do
       config_file = "/etc/sudoers"
       config_text = "%sudo ALL=NOPASSWD: ALL" 
-    
+      
+      #TODO this doesn't replace the %sudo ALL=(ALL) ALL that's already in the file
       push_text config_text, config_file, :sudo => true
     
       verify do
@@ -106,4 +111,22 @@ else
       requires "generate_private_ssh_keys_#{user}"
     end
   end #:make_user
+  
+  
+  package :create_web_group do
+    noop do
+      pre :install, 'groupadd -f www-pub'
+    end
+  end
+  
+  package :change_umask do
+    #Change the umask for users
+    #files will have 664 and directories 775
+    #files created by one user will be writable by other users in the www-group without needing to chmod them
+    replace_text 'umask 022', 'umask 0002', '/etc/profile', :sudo => true
+    
+    verify do
+      file_contains '/etc/profile', 'umask 0002'
+    end
+  end
 end #else

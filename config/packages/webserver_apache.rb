@@ -18,9 +18,10 @@ package :apache, :provides => :webserver do
   # Apache index.html for a default home screen (not pure default Apache to disguise non-setup state)
   index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html'))
   transfer index_default, '/tmp/index.html' do
-    post :install, 'mkdir -p /var/www/localhost/current/public'
-    post :install, 'mv /tmp/index.html /var/www/localhost/current/public/'
-    post :install, 'chmod 644 /var/www/localhost/current/public/index.html'
+    #imitate capistrano setup
+    post :install, 'mkdir -p /var/www/localhost/releases/original/public'
+    post :install, 'mv /tmp/index.html /var/www/localhost/releases/original/public/'
+    post :install, 'ln -s /var/www/localhost/releases/original /var/www/localhost/current'
   end
   
   #so these types of checks won't work because stuff is pre-recorded (before variables in deploy are set) and then executed after deploy is done...
@@ -34,10 +35,20 @@ package :apache, :provides => :webserver do
     
     index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html.erb'))
     transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
-      post :install, "mkdir -p /var/www/#{domain}/curent/public/"
-      post :install, "mv /tmp/index.html /var/www/#{domain}/current/public/"
-      post :install, "chmod 644 /var/www/#{domain}/current/public/index.html"
+      post :install, "mkdir -p /var/www/#{domain}/releases/original/public/"
+      post :install, "mv /tmp/index.html /var/www/#{domain}/releases/original/public/"
+      post :install, "ln -s /var/www/#{domain}/releases/original /var/www/#{domain}/current"
     end
+  end
+  
+  noop do
+    #based on: http://serverfault.com/questions/6895/whats-the-best-way-of-handling-permissions-for-apache2s-user-www-data-in-var
+    
+    # Change the ownership of everything under /var/www to root:www-pub
+    pre :install, 'chown -R root:www-pub /var/www'
+    # Change the permissions of all the folders to 2775, recursively
+    pre :install, 'find /var/www -type d -exec chmod 2775 {} \;'
+    pre :install, 'find /var/www -type f -exec chmod 0664 {} \;'
   end
   
   verify do

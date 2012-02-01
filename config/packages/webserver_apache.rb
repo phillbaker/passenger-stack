@@ -19,9 +19,9 @@ package :apache, :provides => :webserver do
   index_default = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html'))
   transfer index_default, '/tmp/index.html' do
     #imitate capistrano setup
-    post :install, 'mkdir -p /var/www/localhost/releases/original/public'
-    post :install, 'mv /tmp/index.html /var/www/localhost/releases/original/public/'
-    post :install, 'ln -s /var/www/localhost/releases/original /var/www/localhost/current'
+    post :install, 'mkdir -p /var/www/localhost/releases/0/public'
+    post :install, 'mv /tmp/index.html /var/www/localhost/releases/0/public/'
+    post :install, 'ln -s /var/www/localhost/releases/0 /var/www/localhost/current'
   end
   
   #so these types of checks won't work because stuff is pre-recorded (before variables in deploy are set) and then executed after deploy is done...
@@ -35,9 +35,9 @@ package :apache, :provides => :webserver do
     
     index_domain = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'assets', 'apache', 'index.html.erb'))
     transfer index_domain, "/tmp/index.html", :render => true, :locals => { :domain => domain } do
-      post :install, "mkdir -p /var/www/#{domain}/releases/original/public/"
-      post :install, "mv /tmp/index.html /var/www/#{domain}/releases/original/public/"
-      post :install, "ln -s /var/www/#{domain}/releases/original /var/www/#{domain}/current"
+      post :install, "mkdir -p /var/www/#{domain}/releases/0/public/"
+      post :install, "mv /tmp/index.html /var/www/#{domain}/releases/0/public/"
+      post :install, "ln -s /var/www/#{domain}/releases/0 /var/www/#{domain}/current"
     end
   end
   

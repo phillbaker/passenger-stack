@@ -24,6 +24,8 @@ NameVirtualHost <%= domain %>:80
 #
 <VirtualHost <%= domain %>:80>
 	ServerAdmin webmaster@<%= domain %>
+	ServerName <%= domain %>
+	ServerAlias www.<%= domain %>
 
 	DocumentRoot /var/www/<%= domain %>/current/public
 	<Directory />

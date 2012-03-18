@@ -90,7 +90,7 @@ package :passenger, :provides => :appserver do
     %q(PassengerRuby /usr/local/bin/ruby),
     %q(RackEnv production),
     %q(RailsEnv production)].each do |line|
-      post :install, "echo '#{line}' |sudo tee -a /etc/apache2/extras/passenger.conf"
+      post :install, "echo '#{line}' | sudo tee -a /etc/apache2/extras/passenger.conf"
     end
 
     # Restart apache to note changes
